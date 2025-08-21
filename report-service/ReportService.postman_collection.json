@@ -1,0 +1,77 @@
+{
+  "info": {
+    "name": "Report Service API",
+    "_postman_id": "a0b4b1eb-a1b1-4ac7-8e0a-9bb3b7d66f00",
+    "description": "Coleção para testar o serviço de geração assíncrona de relatórios.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Criar relatório (POST /reports)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"rows\": 20000, \"columns\": 12, \"title\": \"Relatório Bonsae\"}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/reports",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "reports"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Consultar status (GET /reports/:id)",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/reports/:id",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "reports",
+            ":id"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Download (GET /reports/:id/download)",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/reports/:id/download",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "reports",
+            ":id",
+            "download"
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000"
+    }
+  ]
+}
