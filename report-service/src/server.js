@@ -31,66 +31,164 @@ app.get("/", async (req, res) => {
         <head>
           <title>Gerar Relatório</title>
           <style>
-            body { font-family: Arial, sans-serif; margin: 20px; }
-            h1 { color: #007bff; }
-            label { display: block; margin-top: 10px; font-weight: bold; }
-            select, input { padding: 5px; width: 250px; }
-            button { margin-top: 15px; padding: 10px 15px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; }
-            button:hover { background: #0056b3; }
+            :root {
+              --bg: #f4f6f9;
+              --card-bg: #ffffff;
+              --text: #333333;
+              --primary: #2563eb;
+              --primary-dark: #1e40af;
+              --header-bg: #1e3a8a;
+            }
+            [data-theme="dark"] {
+              --bg: #1e1e2e;
+              --card-bg: #2a2a3b;
+              --text: #f0f0f0;
+              --primary: #3b82f6;
+              --primary-dark: #1e3a8a;
+              --header-bg: #111122;
+            }
+            body {
+              font-family: 'Segoe UI', Tahoma, sans-serif;
+              margin: 0;
+              background: var(--bg);
+              color: var(--text);
+              transition: background 0.3s, color 0.3s;
+            }
+            header {
+              background: var(--header-bg);
+              color: white;
+              padding: 15px 30px;
+              font-size: 20px;
+              font-weight: bold;
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+            }
+            main {
+              max-width: 800px;
+              margin: 30px auto;
+              background: var(--card-bg);
+              padding: 30px;
+              border-radius: 10px;
+              box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+              transition: background 0.3s;
+            }
+            h1 {
+              color: var(--primary);
+              margin-bottom: 20px;
+            }
+            label {
+              display: block;
+              margin-top: 15px;
+              font-weight: 600;
+            }
+            select {
+              padding: 10px;
+              margin-top: 5px;
+              width: 100%;
+              border-radius: 6px;
+              border: 1px solid #ccc;
+              background: var(--card-bg);
+              color: var(--text);
+            }
+            button {
+              margin-top: 20px;
+              padding: 12px 18px;
+              background: var(--primary);
+              color: white;
+              border: none;
+              border-radius: 6px;
+              font-size: 16px;
+              cursor: pointer;
+              transition: background 0.3s;
+            }
+            button:hover {
+              background: var(--primary-dark);
+            }
+            .theme-toggle {
+              background: transparent;
+              border: 1px solid white;
+              border-radius: 6px;
+              padding: 5px 10px;
+              color: white;
+              cursor: pointer;
+            }
           </style>
         </head>
         <body>
-          <h1>📊 Gerar Relatório da Turma</h1>
-          <form method="POST" action="/relatorio">
-            <label>Turma:</label>
-            <select name="turma_id">
-              ${turmas.rows.map(t => `<option value="${t.id}">${t.nome}</option>`).join("")}
-            </select>
+          <header>
+            <span>📚 API Relatorio - Relatórios</span>
+            <button class="theme-toggle" onclick="toggleTheme()">🌙</button>
+          </header>
+          <main>
+            <h1>Gerar Relatório da Turma</h1>
+            <form method="POST" action="/relatorio">
+              <label>Turma:</label>
+              <select name="turma_id">
+                ${turmas.rows.map(t => `<option value="${t.id}">${t.nome}</option>`).join("")}
+              </select>
 
-            <label>Professor (opcional):</label>
-            <select name="professor_id">
-              <option value="">-- Todos --</option>
-              ${professores.rows.map(p => `<option value="${p.id}">${p.nome}</option>`).join("")}
-            </select>
+              <label>Professor (opcional):</label>
+              <select name="professor_id">
+                <option value="">-- Todos --</option>
+                ${professores.rows.map(p => `<option value="${p.id}">${p.nome}</option>`).join("")}
+              </select>
 
-            <label>Atividade (opcional):</label>
-            <select name="atividade_id">
-              <option value="">-- Todas --</option>
-              ${atividades.rows.map(a => `<option value="${a.id}">${a.nome}</option>`).join("")}
-            </select>
+              <label>Atividade (opcional):</label>
+              <select name="atividade_id">
+                <option value="">-- Todas --</option>
+                ${atividades.rows.map(a => `<option value="${a.id}">${a.nome}</option>`).join("")}
+              </select>
 
-            <label>Presença:</label>
-            <select name="presenca">
-              <option value="">-- Todas --</option>
-              <option value="Presente">Presente</option>
-              <option value="Faltou">Faltou</option>
-            </select>
+              <label>Presença:</label>
+              <select name="presenca">
+                <option value="">-- Todas --</option>
+                <option value="Presente">Presente</option>
+                <option value="Faltou">Faltou</option>
+              </select>
 
-            <label>Conceito:</label>
-            <select name="conceito">
-              <option value="">-- Todos --</option>
-              <option value="A">A</option>
-              <option value="B">B</option>
-              <option value="C">C</option>
-              <option value="D">D</option>
-              <option value="E">E</option>
-            </select>
+              <label>Conceito:</label>
+              <select name="conceito">
+                <option value="">-- Todos --</option>
+                <option value="A">A</option>
+                <option value="B">B</option>
+                <option value="C">C</option>
+                <option value="D">D</option>
+                <option value="E">E</option>
+              </select>
 
-            <label>Status:</label>
-            <select name="status">
-              <option value="">-- Todos --</option>
-              <option value="Aprovado">Aprovado</option>
-              <option value="Reprovado">Reprovado</option>
-            </select>
+              <label>Status:</label>
+              <select name="status">
+                <option value="">-- Todos --</option>
+                <option value="Aprovado">Aprovado</option>
+                <option value="Reprovado">Reprovado</option>
+              </select>
 
-            <label>Tipo de relatório:</label>
-            <select name="tipo">
-              <option value="detalhado">Detalhado + Estatísticas</option>
-              <option value="lista">Lista Filtrada</option>
-            </select>
+              <label>Tipo de relatório:</label>
+              <select name="tipo">
+                <option value="detalhado">Detalhado + Estatísticas</option>
+                <option value="lista">Lista Filtrada</option>
+              </select>
 
-            <button type="submit">Gerar Relatório</button>
-          </form>
+              <button type="submit">📊 Gerar Relatório</button>
+            </form>
+          </main>
+
+          <script>
+            function toggleTheme() {
+              const html = document.documentElement;
+              const current = html.getAttribute("data-theme");
+              const newTheme = current === "dark" ? "light" : "dark";
+              html.setAttribute("data-theme", newTheme);
+              localStorage.setItem("theme", newTheme);
+              document.querySelector(".theme-toggle").textContent = newTheme === "dark" ? "☀️" : "🌙";
+            }
+            (function() {
+              const saved = localStorage.getItem("theme") || "light";
+              document.documentElement.setAttribute("data-theme", saved);
+              document.querySelector(".theme-toggle").textContent = saved === "dark" ? "☀️" : "🌙";
+            })();
+          </script>
         </body>
       </html>
     `);
@@ -137,9 +235,8 @@ async function buscarRelatorio(filtros) {
 
   query += ` GROUP BY a.id, t.id, atv.id, p.id ORDER BY a.nome`;
 
-  let result = await pool.query(query, params);
+  const result = await pool.query(query, params);
 
-  // calcular status
   result.rows.forEach(r => {
     if (r.nota === null) {
       r.status = "Pendente";
@@ -150,12 +247,7 @@ async function buscarRelatorio(filtros) {
     }
   });
 
-  // aplicar filtro de status
-  if (status) {
-    result.rows = result.rows.filter(r => r.status === status);
-  }
-
-  return result.rows;
+  return status ? result.rows.filter(r => r.status === status) : result.rows;
 }
 
 // rota relatório html
@@ -165,9 +257,6 @@ app.post("/relatorio", async (req, res) => {
   try {
     const rows = await buscarRelatorio({ turma_id, professor_id, atividade_id, presenca, conceito, status });
 
-    const total = rows.length;
-
-    // notas convertidas para número
     const notasValidas = rows
       .map(r => typeof r.nota === "number" ? r.nota : parseFloat(r.nota))
       .filter(n => !Number.isNaN(n));
@@ -176,6 +265,7 @@ app.post("/relatorio", async (req, res) => {
       ? notasValidas.reduce((s, n) => s + n, 0) / notasValidas.length
       : 0;
 
+    const total = rows.length;
     const frequencia = rows.filter(r => r.presenca).length / (total || 1) * 100;
     const aprovados = rows.filter(r => r.status === "Aprovado").length;
     const reprovados = rows.filter(r => r.status === "Reprovado").length;
@@ -185,63 +275,161 @@ app.post("/relatorio", async (req, res) => {
         <head>
           <title>Relatório</title>
           <style>
-            body { font-family: Arial, sans-serif; margin: 20px; }
-            h1 { color: #007bff; }
+            :root {
+              --bg: #f4f6f9;
+              --card-bg: #ffffff;
+              --text: #333333;
+              --primary: #2563eb;
+              --primary-dark: #1e40af;
+              --header-bg: #1e3a8a;
+            }
+            [data-theme="dark"] {
+              --bg: #1e1e2e;
+              --card-bg: #2a2a3b;
+              --text: #f0f0f0;
+              --primary: #3b82f6;
+              --primary-dark: #1e3a8a;
+              --header-bg: #111122;
+            }
+            body {
+              font-family: 'Segoe UI', Tahoma, sans-serif;
+              margin: 0;
+              background: var(--bg);
+              color: var(--text);
+              transition: background 0.3s, color 0.3s;
+            }
+            header {
+              background: var(--header-bg);
+              color: white;
+              padding: 15px 30px;
+              font-size: 20px;
+              font-weight: bold;
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+            }
+            main {
+              max-width: 1000px;
+              margin: 30px auto;
+              background: var(--card-bg);
+              padding: 30px;
+              border-radius: 10px;
+              box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+              transition: background 0.3s;
+            }
+            h1 { color: var(--primary); }
             .stats { display: flex; gap: 20px; margin-bottom: 20px; }
-            .card { padding: 10px 20px; background: #f8f9fa; border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-            table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-            th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
-            th { background: #007bff; color: white; }
-            .btn { margin-right: 10px; padding: 8px 12px; border-radius: 4px; text-decoration: none; color: white; }
+            .card {
+              padding: 10px 20px;
+              background: var(--card-bg);
+              border-radius: 6px;
+              box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+              text-align: center;
+            }
+            table {
+              width: 100%;
+              border-collapse: collapse;
+              margin-top: 20px;
+            }
+            th, td {
+              border: 1px solid #ddd;
+              padding: 8px;
+              text-align: center;
+              color: var(--text); /* 🔥 aqui a correção */
+            }
+
+            th {
+              background: var(--primary);
+              color: white; /* título sempre branco */
+            }
+
+            [data-theme="dark"] td {
+              color: #f0f0f0;
+            }
+            .btn {
+              margin-right: 10px;
+              padding: 8px 12px;
+              border-radius: 4px;
+              text-decoration: none;
+              color: white;
+            }
             .excel { background: green; }
             .pdf { background: red; }
+            .theme-toggle {
+              background: transparent;
+              border: 1px solid white;
+              border-radius: 6px;
+              padding: 5px 10px;
+              color: white;
+              cursor: pointer;
+            }
           </style>
         </head>
         <body>
-          <h1>📑 Relatório Gerado</h1>
+          <header>
+            <span>📑 Relatório da Turma</span>
+            <button class="theme-toggle" onclick="toggleTheme()">🌙</button>
+          </header>
+          <main>
+            ${tipo === "detalhado" ? `
+            <div class="stats">
+              <div class="card"><b>${total}</b><br/>Total</div>
+              <div class="card"><b>${mediaNotas.toFixed(2)}</b><br/>Média Notas</div>
+              <div class="card"><b>${frequencia.toFixed(1)}%</b><br/>Frequência</div>
+              <div class="card"><b>${aprovados}</b><br/>Aprovados</div>
+              <div class="card"><b>${reprovados}</b><br/>Reprovados</div>
+            </div>` : ""}
 
-          ${tipo === "detalhado" ? `
-          <div class="stats">
-            <div class="card"><b>${total}</b><br/>Total</div>
-            <div class="card"><b>${mediaNotas.toFixed(2)}</b><br/>Média Notas</div>
-            <div class="card"><b>${frequencia.toFixed(1)}%</b><br/>Frequência</div>
-            <div class="card"><b>${aprovados}</b><br/>Aprovados</div>
-            <div class="card"><b>${reprovados}</b><br/>Reprovados</div>
-          </div>` : ""}
-
-          <table>
-            <tr>
-              <th>Aluno</th>
-              <th>Email</th>
-              <th>Turma</th>
-              <th>Atividade</th>
-              <th>Nota</th>
-              <th>Conceito</th>
-              <th>Presença</th>
-              <th>Horas</th>
-              <th>Status</th>
-              <th>Professor(es)</th>
-            </tr>
-            ${rows.map(r => `
+            <table>
               <tr>
-                <td>${r.aluno}</td>
-                <td>${r.email}</td>
-                <td>${r.turma}</td>
-                <td>${r.atividade}</td>
-                <td>${r.nota || "-"}</td>
-                <td>${r.conceito || "-"}</td>
-                <td>${r.presenca ? "Presente" : "Faltou"}</td>
-                <td>${r.horas || "-"}</td>
-                <td>${r.status}</td>
-                <td>${r.professores || "-"}</td>
+                <th>Aluno</th>
+                <th>Email</th>
+                <th>Turma</th>
+                <th>Atividade</th>
+                <th>Nota</th>
+                <th>Conceito</th>
+                <th>Presença</th>
+                <th>Horas</th>
+                <th>Status</th>
+                <th>Professor(es)</th>
               </tr>
-            `).join("")}
-          </table>
+              ${rows.map(r => `
+                <tr>
+                  <td>${r.aluno}</td>
+                  <td>${r.email}</td>
+                  <td>${r.turma}</td>
+                  <td>${r.atividade}</td>
+                  <td>${r.nota || "-"}</td>
+                  <td>${r.conceito || "-"}</td>
+                  <td>${r.presenca ? "Presente" : "Faltou"}</td>
+                  <td>${r.horas || "-"}</td>
+                  <td>${r.status}</td>
+                  <td>${r.professores || "-"}</td>
+                </tr>
+              `).join("")}
+            </table>
 
-          <p>
-            <a class="btn excel" href="/download/excel?turma_id=${turma_id}&professor_id=${professor_id || ""}&atividade_id=${atividade_id || ""}&presenca=${presenca || ""}&conceito=${conceito || ""}&status=${status || ""}">⬇ Baixar Excel</a>
-            <a class="btn pdf" href="/download/pdf?turma_id=${turma_id}&professor_id=${professor_id || ""}&atividade_id=${atividade_id || ""}&presenca=${presenca || ""}&conceito=${conceito || ""}&status=${status || ""}">⬇ Baixar PDF</a>
-          </p>
+            <p>
+              <a class="btn excel" href="/download/excel?turma_id=${turma_id}&professor_id=${professor_id || ""}&atividade_id=${atividade_id || ""}&presenca=${presenca || ""}&conceito=${conceito || ""}&status=${status || ""}">⬇ Baixar Excel</a>
+              <a class="btn pdf" href="/download/pdf?turma_id=${turma_id}&professor_id=${professor_id || ""}&atividade_id=${atividade_id || ""}&presenca=${presenca || ""}&conceito=${conceito || ""}&status=${status || ""}">⬇ Baixar PDF</a>
+            </p>
+          </main>
+
+          <script>
+            function toggleTheme() {
+              const html = document.documentElement;
+              const current = html.getAttribute("data-theme");
+              const newTheme = current === "dark" ? "light" : "dark";
+              html.setAttribute("data-theme", newTheme);
+              localStorage.setItem("theme", newTheme);
+              document.querySelector(".theme-toggle").textContent = newTheme === "dark" ? "☀️" : "🌙";
+            }
+            (function() {
+              const saved = localStorage.getItem("theme") || "light";
+              document.documentElement.setAttribute("data-theme", saved);
+              document.querySelector(".theme-toggle").textContent = saved === "dark" ? "☀️" : "🌙";
+            })();
+          </script>
         </body>
       </html>
     `);
@@ -252,9 +440,7 @@ app.post("/relatorio", async (req, res) => {
 
 // rota download excel
 app.get("/download/excel", async (req, res) => {
-  const { turma_id, professor_id, atividade_id, presenca, conceito, status } = req.query;
-  const rows = await buscarRelatorio({ turma_id, professor_id, atividade_id, presenca, conceito, status });
-
+  const rows = await buscarRelatorio(req.query);
   const workbook = new ExcelJS.Workbook();
   const sheet = workbook.addWorksheet("Relatório");
 
@@ -286,8 +472,7 @@ app.get("/download/excel", async (req, res) => {
 
 // rota download pdf
 app.get("/download/pdf", async (req, res) => {
-  const { turma_id, professor_id, atividade_id, presenca, conceito, status } = req.query;
-  const rows = await buscarRelatorio({ turma_id, professor_id, atividade_id, presenca, conceito, status });
+  const rows = await buscarRelatorio(req.query);
 
   const doc = new PDFDocument({ margin: 30, size: "A4", layout: "landscape" });
   res.setHeader("Content-Disposition", "attachment; filename=relatorio.pdf");
