@@ -16,6 +16,8 @@ const __dirname = path.dirname(__filename);
 
 
 // habilita arquivos estáticos (CSS, imagens etc) em /src/public
+app.set("view engine", "ejs");
+app.set("views", path.join(__dirname, "views"));
 app.use(express.static(path.join(__dirname, "public")));
 
 // para ler dados de formulário
@@ -40,91 +42,11 @@ app.get("/", async (req, res) => {
     const professores = await pool.query("SELECT id, nome FROM professores");
     const atividades = await pool.query("SELECT id, nome FROM atividades");
 
-    res.send(`
-      <html>
-        <head>
-          <title>Gerar Relatório</title>
-          <link rel="stylesheet" href="/style.css">
-        </head>
-        <body>
-          <header>
-            <span>📚 API Relatorio - Relatórios</span>
-            <button class="theme-toggle" onclick="toggleTheme()">🌙</button>
-          </header>
-          <main>
-            <h1>Gerar Relatório da Turma</h1>
-            <form method="POST" action="/relatorio">
-              <label>Turma:</label>
-              <select name="turma_id">
-                ${turmas.rows.map(t => `<option value="${t.id}">${t.nome}</option>`).join("")}
-              </select>
+    res.render("index", { turmas: turmas.rows, professores: professores.rows, atividades: atividades.rows });
 
-              <label>Professor (opcional):</label>
-              <select name="professor_id">
-                <option value="">-- Todos --</option>
-                ${professores.rows.map(p => `<option value="${p.id}">${p.nome}</option>`).join("")}
-              </select>
-
-              <label>Atividade (opcional):</label>
-              <select name="atividade_id">
-                <option value="">-- Todas --</option>
-                ${atividades.rows.map(a => `<option value="${a.id}">${a.nome}</option>`).join("")}
-              </select>
-
-              <label>Presença:</label>
-              <select name="presenca">
-                <option value="">-- Todas --</option>
-                <option value="Presente">Presente</option>
-                <option value="Faltou">Faltou</option>
-              </select>
-
-              <label>Conceito:</label>
-              <select name="conceito">
-                <option value="">-- Todos --</option>
-                <option value="A">A</option>
-                <option value="B">B</option>
-                <option value="C">C</option>
-                <option value="D">D</option>
-                <option value="E">E</option>
-              </select>
-
-              <label>Status:</label>
-              <select name="status">
-                <option value="">-- Todos --</option>
-                <option value="Aprovado">Aprovado</option>
-                <option value="Reprovado">Reprovado</option>
-              </select>
-
-              <label>Tipo de relatório:</label>
-              <select name="tipo">
-                <option value="detalhado">Detalhado + Estatísticas</option>
-                <option value="lista">Lista Filtrada</option>
-              </select>
-
-              <button type="submit">📊 Gerar Relatório</button>
-            </form>
-          </main>
-
-          <script>
-            function toggleTheme() {
-              const html = document.documentElement;
-              const current = html.getAttribute("data-theme");
-              const newTheme = current === "dark" ? "light" : "dark";
-              html.setAttribute("data-theme", newTheme);
-              localStorage.setItem("theme", newTheme);
-              document.querySelector(".theme-toggle").textContent = newTheme === "dark" ? "☀️" : "🌙";
-            }
-            (function() {
-              const saved = localStorage.getItem("theme") || "light";
-              document.documentElement.setAttribute("data-theme", saved);
-              document.querySelector(".theme-toggle").textContent = saved === "dark" ? "☀️" : "🌙";
-            })();
-          </script>
-        </body>
-      </html>
-    `);
   } catch (err) {
-    res.send("Erro ao carregar filtros: " + err.message);
+    console.error(err);
+    res.status(500).send("Erro ao carregar dados");
   }
 });
 
