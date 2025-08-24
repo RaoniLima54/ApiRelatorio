@@ -3,10 +3,25 @@ import pkg from "pg";
 import bodyParser from "body-parser";
 import ExcelJS from "exceljs";
 import PDFDocument from "pdfkit";
+import path from "path";
+import { fileURLToPath } from "url";
 
 const { Pool } = pkg;
 const app = express();
 const port = 3000;
+
+// Necessário pq está usando ESModules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+
+// habilita arquivos estáticos (CSS, imagens etc) em /src/public
+app.use(express.static(path.join(__dirname, "public")));
+
+// para ler dados de formulário
+app.use(bodyParser.urlencoded({ extended: true }));
+
+
 
 // conexão banco
 const pool = new Pool({
@@ -17,7 +32,6 @@ const pool = new Pool({
   port: 5432,
 });
 
-app.use(bodyParser.urlencoded({ extended: true }));
 
 // rota inicial -> formulário
 app.get("/", async (req, res) => {
@@ -30,90 +44,7 @@ app.get("/", async (req, res) => {
       <html>
         <head>
           <title>Gerar Relatório</title>
-          <style>
-            :root {
-              --bg: #f4f6f9;
-              --card-bg: #ffffff;
-              --text: #333333;
-              --primary: #2563eb;
-              --primary-dark: #1e40af;
-              --header-bg: #1e3a8a;
-            }
-            [data-theme="dark"] {
-              --bg: #1e1e2e;
-              --card-bg: #2a2a3b;
-              --text: #f0f0f0;
-              --primary: #3b82f6;
-              --primary-dark: #1e3a8a;
-              --header-bg: #111122;
-            }
-            body {
-              font-family: 'Segoe UI', Tahoma, sans-serif;
-              margin: 0;
-              background: var(--bg);
-              color: var(--text);
-              transition: background 0.3s, color 0.3s;
-            }
-            header {
-              background: var(--header-bg);
-              color: white;
-              padding: 15px 30px;
-              font-size: 20px;
-              font-weight: bold;
-              display: flex;
-              justify-content: space-between;
-              align-items: center;
-            }
-            main {
-              max-width: 800px;
-              margin: 30px auto;
-              background: var(--card-bg);
-              padding: 30px;
-              border-radius: 10px;
-              box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-              transition: background 0.3s;
-            }
-            h1 {
-              color: var(--primary);
-              margin-bottom: 20px;
-            }
-            label {
-              display: block;
-              margin-top: 15px;
-              font-weight: 600;
-            }
-            select {
-              padding: 10px;
-              margin-top: 5px;
-              width: 100%;
-              border-radius: 6px;
-              border: 1px solid #ccc;
-              background: var(--card-bg);
-              color: var(--text);
-            }
-            button {
-              margin-top: 20px;
-              padding: 12px 18px;
-              background: var(--primary);
-              color: white;
-              border: none;
-              border-radius: 6px;
-              font-size: 16px;
-              cursor: pointer;
-              transition: background 0.3s;
-            }
-            button:hover {
-              background: var(--primary-dark);
-            }
-            .theme-toggle {
-              background: transparent;
-              border: 1px solid white;
-              border-radius: 6px;
-              padding: 5px 10px;
-              color: white;
-              cursor: pointer;
-            }
-          </style>
+          <link rel="stylesheet" href="/style.css">
         </head>
         <body>
           <header>
@@ -273,97 +204,9 @@ app.post("/relatorio", async (req, res) => {
     res.send(`
       <html>
         <head>
+          <link rel="stylesheet" href="/relatorio.css">
           <title>Relatório</title>
-          <style>
-            :root {
-              --bg: #f4f6f9;
-              --card-bg: #ffffff;
-              --text: #333333;
-              --primary: #2563eb;
-              --primary-dark: #1e40af;
-              --header-bg: #1e3a8a;
-            }
-            [data-theme="dark"] {
-              --bg: #1e1e2e;
-              --card-bg: #2a2a3b;
-              --text: #f0f0f0;
-              --primary: #3b82f6;
-              --primary-dark: #1e3a8a;
-              --header-bg: #111122;
-            }
-            body {
-              font-family: 'Segoe UI', Tahoma, sans-serif;
-              margin: 0;
-              background: var(--bg);
-              color: var(--text);
-              transition: background 0.3s, color 0.3s;
-            }
-            header {
-              background: var(--header-bg);
-              color: white;
-              padding: 15px 30px;
-              font-size: 20px;
-              font-weight: bold;
-              display: flex;
-              justify-content: space-between;
-              align-items: center;
-            }
-            main {
-              max-width: 1000px;
-              margin: 30px auto;
-              background: var(--card-bg);
-              padding: 30px;
-              border-radius: 10px;
-              box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-              transition: background 0.3s;
-            }
-            h1 { color: var(--primary); }
-            .stats { display: flex; gap: 20px; margin-bottom: 20px; }
-            .card {
-              padding: 10px 20px;
-              background: var(--card-bg);
-              border-radius: 6px;
-              box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-              text-align: center;
-            }
-            table {
-              width: 100%;
-              border-collapse: collapse;
-              margin-top: 20px;
-            }
-            th, td {
-              border: 1px solid #ddd;
-              padding: 8px;
-              text-align: center;
-              color: var(--text); /* 🔥 aqui a correção */
-            }
-
-            th {
-              background: var(--primary);
-              color: white; /* título sempre branco */
-            }
-
-            [data-theme="dark"] td {
-              color: #f0f0f0;
-            }
-            .btn {
-              margin-right: 10px;
-              padding: 8px 12px;
-              border-radius: 4px;
-              text-decoration: none;
-              color: white;
-            }
-            .excel { background: green; }
-            .pdf { background: red; }
-            .theme-toggle {
-              background: transparent;
-              border: 1px solid white;
-              border-radius: 6px;
-              padding: 5px 10px;
-              color: white;
-              cursor: pointer;
-            }
-          </style>
+          
         </head>
         <body>
           <header>
